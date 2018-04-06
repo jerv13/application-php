@@ -7,7 +7,7 @@ DIR_CURRENT=`pwd`;
 
 RESETHARD="y"
 UPDATEIDE="y";
-VENDOR="jerv";
+VENDOR="jerv13";
 HTTPGITHUB="https://github.com";
 SSHGITHUB="git@github.com"
 

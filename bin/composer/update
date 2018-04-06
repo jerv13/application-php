@@ -22,7 +22,7 @@ if [ "$?" != "0" ];
         printf "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
         exit 1
 fi
-$DIR_THIS/checkout.bash
+$DIR_THIS/checkout
 $DIR_THIS/dumpautoload
 
 cd $DIR_CURRENT;

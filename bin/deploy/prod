@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 git fetch upstream
 git branch -d production-temp-for-release-only

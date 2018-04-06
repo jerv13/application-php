@@ -5,7 +5,6 @@ DIR_ROOT="`cd "${DIR_THIS}/../..";pwd;cd "${DIR_THIS}"`"
 DIR_CURRENT=`pwd`;
 
 GIT_HASH="`git rev-parse HEAD`"
-echo $GIT_HASH
-exit;
+DIR_USER="`cd ~/;pwd;cd "${DIR_THIS}"`"
 
-php $DIR_ROOT/vendor/jerv/server-environment/cli/deploy.php env=\"local\" env-production=\"prod\" version=\"$GIT_HASH\" secrets={\"my-secret\":\"NOT_RECOMMENDED\"}
+php $DIR_ROOT/vendor/jerv/server-environment/cli/deploy.php env=\"local\" env-production=\"prod\" version=\"$GIT_HASH\" secrets-file-json=$DIR_USER/.secrets.json
