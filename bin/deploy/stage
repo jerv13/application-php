@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+git fetch upstream
+git branch -d staging-temp-for-release-only
+git checkout -b staging-temp-for-release-only upstream/master
+git push upstream staging-temp-for-release-only:staging -f
+git checkout master

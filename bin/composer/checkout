@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+#!/usr/bin/env bash
+
+DIR_THIS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR_ROOT="`cd "${DIR_THIS}/../..";pwd;cd "${DIR_THIS}"`"
+DIR_CURRENT=`pwd`;
+
+RESETHARD="y"
+UPDATEIDE="y";
+VENDOR="jerv";
+HTTPGITHUB="https://github.com";
+SSHGITHUB="git@github.com"
+
+VCS="";
+VCSXML=$(cat <<InputComesFromHERE
+<?xml version="1.0" encoding="UTF-8"?>\n
+<project version="4">\n
+  <component name="VcsDirectoryMappings">\n
+    <mapping directory="\$PROJECT_DIR\$" vcs="Git" />\n
+    replaceMe
+  </component>\n
+</project>\n
+InputComesFromHERE
+);
+
+while getopts "u:i:r:h" opts; do
+    case $opts in
+    h)
+        echo "HELP ***********";
+        echo "-h                  Help";
+        echo "-u {githubUserId}   Github user ID";
+        echo "-r {y,n}            Flag to git reset hard";
+        echo "-i {y,n}            Update IDE GIT data (true by default)";
+        exit 0;
+    ;;
+    u)
+        USER_ID=$OPTARG
+    ;;
+    r)
+        RESETHARD=$OPTARG
+    ;;
+    i)
+        UPDATEIDE=$OPTARG
+    ;;
+    esac
+done
+
+if [ -z "$USER_ID" ]; then
+    echo "Please enter you Github user ID, followed by [ENTER]:";
+    read USER_ID;
+fi;
+
+if [ -z "$USER_ID" ]; then
+    echo "Github user ID required"
+    exit 1
+fi
+
+if [ -z "$RESETHARD" ]; then
+    echo "Would you like to reset HARD (y,n)";
+    read -rsn1 RESETHARD;
+fi;
+
+function get_repo_name () {
+    local PATH=$1
+    local resultVar=$2
+    set -f
+    PARTS=(${PATH//\// })
+
+    local localResult=${PARTS[2]}
+
+    eval $resultVar="'$localResult'"
+}
+
+for DIR in `$DIR_THIS/../git/list-repos.sh`; do
+    cd $DIR;
+
+    if [ -d ".git" ]; then
+
+        CUR_ORIGIN=`git config --get remote.origin.url`;
+        ORIGIN=$CUR_ORIGIN;
+        CUR_ORIGIN="${CUR_ORIGIN/$HTTPGITHUB/$SSHGITHUB:}";
+
+        ORIGIN_NAME=''
+        get_repo_name $CUR_ORIGIN "ORIGIN_NAME";
+        REQUEST_ORIGIN="$SSHGITHUB:/$USER_ID/$ORIGIN_NAME"
+
+        CUR_UPSTREAM=`git config --get remote.upstream.url`;
+        UPSTREAM=$CUR_UPSTREAM;
+        CUR_UPSTREAM="${CUR_UPSTREAM/$HTTPGITHUB/$SSHGITHUB:}";
+
+        printf "\n*** $DIR ***\n";
+        echo "";
+        echo "Request origin:  $REQUEST_ORIGIN";
+        echo "";
+        echo "Current origin:  $CUR_ORIGIN";
+        echo "Current upstream $CUR_UPSTREAM";
+        echo "";
+
+        if [ -z "$CUR_UPSTREAM" ]; then
+            echo "- No Upstream found - Remapping -";
+            UPSTREAM=$CUR_ORIGIN;
+        fi;
+
+        # ORIGIN="${CUR_ORIGIN/$VENDOR/$USER_ID}";
+        UPSTREAM="${UPSTREAM/$USER_ID/$VENDOR}";
+
+        echo "- GIT:";
+
+        if [ "$CUR_ORIGIN" != "$REQUEST_ORIGIN" ]; then
+            echo "New origin:      $REQUEST_ORIGIN";
+            git remote remove origin;
+            git remote add origin $REQUEST_ORIGIN;
+        fi;
+
+        if [ "$CUR_UPSTREAM" != "$UPSTREAM" ]; then
+            echo "New upstream:    $UPSTREAM";
+            git remote remove upstream
+            git remote add upstream $UPSTREAM;
+        fi;
+
+        git fetch upstream master;
+        git checkout master;
+
+        if [[ "$RESETHARD" == "y" && -z "$CUR_UPSTREAM" ]]; then
+            echo "- RESET HARD for origin/master"
+            git reset --hard upstream/master;
+        fi;
+
+        VCS="$VCS <mapping directory=\"\$PROJECT_DIR\$/$DIR\" vcs=\"Git\" />\n";
+    fi
+    cd $DIR_CURRENT;
+done;
+
+# IDE DATA
+if [ "$UPDATEIDE" == "y" ]; then
+    printf "\n*** Updating IDE GIT data ***\n"
+
+    if [ ! -d "./.idea/" ]; then
+       mkdir ./.idea;
+    fi;
+
+    echo -e ${VCSXML/replaceMe/$VCS} > ./.idea/vcs.xml;
+fi;
+
+composer dumpautoload

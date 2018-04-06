@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Just throw this in your .gitconfig and you’re all set:
+# [alias]
+#  pu = !"git fetch origin -v; git fetch upstream -v; git merge upstream/master"
+# Now git pu will grab all of the latest changes from both remotes, and then merge in the commits from upstream.
+
+git fetch origin -v; git fetch upstream -v; git merge upstream/master

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+DIR_THIS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR_ROOT="`cd "${DIR_THIS}/../..";pwd;cd "${DIR_THIS}"`"
+DIR_CURRENT=`pwd`;
+
+FOLDERS=( "vendor/jerv/server-environment" "vendor/reliv/server-environment")
+
+VCS="";
+for FOLDER in "${FOLDERS[@]}"; do
+    REPOS+=($DIR_ROOT/$FOLDER);
+done;
+echo ${REPOS[@]}

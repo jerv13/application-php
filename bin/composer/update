@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+DIR_THIS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR_ROOT="`cd "${DIR_THIS}/../..";pwd;cd "${DIR_THIS}"`"
+DIR_CURRENT=`pwd`;
+
+cd $DIR_ROOT;
+
+git fetch upstream master;git merge upstream/master
+if [ "$?" != "0" ];
+    then
+        printf "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+        printf "!!! Fetch Merge Failed on Update !!!\n"
+        printf "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+        exit 1
+fi
+$DIR_THIS/composer-no-xdebug update -vvv --prefer-source
+if [ "$?" != "0" ];
+    then
+        printf "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+        printf "!!! Composer Failed to Update !!!\n"
+        printf "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+        exit 1
+fi
+$DIR_THIS/checkout.bash
+$DIR_THIS/dumpautoload
+
+cd $DIR_CURRENT;

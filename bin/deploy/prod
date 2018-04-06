@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+git fetch upstream
+git branch -d production-temp-for-release-only
+git checkout -b production-temp-for-release-only upstream/staging
+git push upstream production-temp-for-release-only:production -f
+git checkout master

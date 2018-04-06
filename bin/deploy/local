@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+DIR_THIS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR_ROOT="`cd "${DIR_THIS}/../..";pwd;cd "${DIR_THIS}"`"
+DIR_CURRENT=`pwd`;
+
+GIT_HASH="`git rev-parse HEAD`"
+echo $GIT_HASH
+exit;
+
+php $DIR_ROOT/vendor/jerv/server-environment/cli/deploy.php env=\"local\" env-production=\"prod\" version=\"$GIT_HASH\" secrets={\"my-secret\":\"NOT_RECOMMENDED\"}

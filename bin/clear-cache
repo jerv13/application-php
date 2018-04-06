@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo "[clear-caches] Clearing caches..."
+
+rm -Rf $DIR/data/logs/*
+touch $DIR/data/logs/gitkeep
+echo "gitkeep" >> $DIR/data/logs/gitkeep
+
+rm -Rf $DIR/data/cache/*
+touch $DIR/data/cache/gitkeep
+echo "gitkeep" >> $DIR/data/cache/gitkeep

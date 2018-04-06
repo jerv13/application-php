@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+LOCAL_DIR="$( cd "$( echo "${BASH_SOURCE[0]%/*}/" )"; pwd )"
+
+php $LOCAL_DIR/console.php "$@"
